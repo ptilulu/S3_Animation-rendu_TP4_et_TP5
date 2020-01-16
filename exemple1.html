@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Premier programme WebGL</title>
+		<style>
+			body {
+				margin : 0px;    
+			}
+		</style>
+	</head>
+	<body>
+		<script src="three.js-master/build/three.js"></script>
+		<script src="three.js-master/examples/js/controls/OrbitControls.js"></script>
+		<script src="three.js-master/examples/js/loaders/OBJLoader.js"></script>
+		<script src="three.js-master/examples/js/loaders/MTLLoader.js"></script>
+		<script>
+			/*var mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath( 'objets/vache/' );
+			mtlLoader.load( "vache.mtl", function( materials ) {
+				materials.preload();
+				var objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials( materials );
+				objLoader.setPath( 'objets/vache/' );
+				objLoader.load( 'vache.obj', function ( object ) {
+					scene.add( object );
+			},function ( xhr ) {
+				console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+			},function ( error ) {
+				console.error( "Erreur de chargement" );
+			});
+			});*/
+
+			function onWindowResize() {
+				camera2.aspect = window.innerWidth / window.innerHeight;
+				camera2.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			window.addEventListener( 'resize', onWindowResize, false );
+
+			
+			
+
+
+
+
+
+			var scene = new THREE.Scene();
+
+			scene.background = new THREE.Color("rgb(170, 170, 170)");
+			var camera1 = new THREE.PerspectiveCamera( 45,window.innerWidth/window.innerHeight, 0.1, 10000 );
+			camera1.position.set( 0, 0, 8 );
+
+			var camera2 = new THREE.PerspectiveCamera( 45, window.innerWidth /window.innerHeight, 1, 10000 );
+			camera2.position.set( 0, 5, 10 );
+
+			var renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement);
+			var material1 = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );	
+			var material2 = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff,shininess: 40 } );
+			var material3 = new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0xffffff,shininess: 40 } );
+			var material4 = new THREE.MeshPhongMaterial( { color: 0x00ffff, specular: 0xffffff,shininess: 40 } );
+			var material5 = new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff,shininess: 40 } );
+
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var cube = new THREE.Mesh( geometry, material2 );
+			cube.position.set(0,1,0);
+			scene.add( cube );
+
+			var geometry = new THREE.SphereGeometry( 4 , 32, 32 );
+			var sphere = new THREE.Mesh( geometry, material2 );
+			sphere.position.set(6,-1,6);
+			scene.add( sphere );
+
+			var geometry = new THREE.TorusGeometry( 2, 0.5, 16, 100 );
+			var tor1 = new THREE.Mesh( geometry, material5 );
+			tor1.position.set(-6,3,-6);
+			scene.add( tor1 );
+
+			var geometry = new THREE.TorusGeometry( 2, 0.5, 16, 100 );
+			var tor2 = new THREE.Mesh( geometry, material4 );
+			tor2.position.set(-6,3,-6);
+			tor2.rotation.set(0,-Math.PI / 2, 0);
+			scene.add( tor2 );
+
+			var geometry = new THREE.ConeGeometry( 3, 8, 32 );
+			var cone = new THREE.Mesh( geometry, material3 );
+			cone.position.set(-7,4,7);
+			scene.add( cone );
+
+			var geometry = new THREE.CylinderGeometry( 3, 2, 6, 32 );
+			var cyl = new THREE.Mesh( geometry, material3 );
+			cyl.position.set(7,3,-7);
+			scene.add( cyl );
+
+			
+            
+			var texture = new THREE.TextureLoader().load( 'sol.jpg' );
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set( 5, 5 );
+			var geometry = new THREE.PlaneGeometry( 20, 20, 32 );
+			var material = new THREE.MeshPhongMaterial( { color: 0x00ff00, map:texture, side: THREE.DoubleSide } );
+			
+			var plane = new THREE.Mesh( geometry, material );
+			plane.rotation.set(-Math.PI / 2, 0, 0);
+			scene.add( plane );
+			
+
+			
+
+			var lumiereAmbiante = new THREE.AmbientLight( 0x999999 ) ;
+			scene.add( lumiereAmbiante );
+			var lumiereDirectionnelle = new THREE.DirectionalLight( 0xffbbff);
+			lumiereDirectionnelle.position.set( 1, 1, 1 );
+			scene.add( lumiereDirectionnelle );
+			scene.fog = new THREE.Fog( 0xaaaaaa, 3, 40);
+
+			var axesHelper = new THREE.AxesHelper( 8 );
+			scene.add( axesHelper );
+			var gridHelper = new THREE.GridHelper( 20, 10 );
+			scene.add( gridHelper );
+			axesHelper.visible=false;
+			gridHelper.visible=false;
+
+			var controls = new THREE.OrbitControls( camera2, renderer.domElement );
+
+			
+			var isFullScreen=false; 
+			var elem = document.documentElement;
+			/* View in fullscreen */
+			function openFullscreen() {
+				isFullScreen=true;
+				if (elem.requestFullscreen) {
+					elem.requestFullscreen();
+				} else if (elem.mozRequestFullScreen) { /* Firefox */
+					elem.mozRequestFullScreen();
+				} else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+					elem.webkitRequestFullscreen();
+				} else if (elem.msRequestFullscreen) { /* IE/Edge */
+					elem.msRequestFullscreen();
+				}
+			}
+
+			/* Close fullscreen */
+			function closeFullscreen() {
+				isFullScreen=false;
+				if (document.exitFullscreen) {
+					document.exitFullscreen();
+				} else if (document.mozCancelFullScreen) { // Firefox
+			    	document.mozCancelFullScreen();
+				} else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+					document.webkitExitFullscreen();
+				} else if (document.msExitFullscreen) { // IE/Edge
+					document.msExitFullscreen();
+				}
+			}
+
+			window.addEventListener("keydown", function (event) {
+			switch (event.key) {
+				case "a":
+					console.log("a");
+					axesHelper.visible=!axesHelper.visible;
+					break;
+				case "g":
+					console.log("g");
+					gridHelper.visible=!gridHelper.visible;
+					break;
+				case "f":
+					console.log("f");
+					if(isFullScreen){
+						console.log("close");
+						closeFullscreen();
+					}else{
+						console.log("open");
+						openFullscreen();
+					}
+					break;
+				default:
+					console.log(event.key);
+				return;
+				}event.preventDefault();   // Pour que d'autres fonctions puissent traiter la touche
+			}, true);
+
+			var cubeDy=0.05;
+			function animate() {
+				cube.rotation.x += 0.03;
+				cube.rotation.y += 0.03;
+					cube.position.y += cubeDy;
+				if(cube.position.y<1)
+					cubeDy=0.05;
+				else if(cube.position.y>3)
+					cubeDy=-0.05;
+
+
+				requestAnimationFrame( animate );
+				controls.update();
+				renderer.render( scene, camera2 );
+			}
+			animate();
+			
+		</script>
+	</body>
+</html>
